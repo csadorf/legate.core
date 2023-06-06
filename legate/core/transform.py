@@ -22,6 +22,7 @@ from . import AffineTransform, Point, Rect, Transform as LegionTransform
 from .partition import (
     AffineProjection,
     DomainPartition,
+    ImagePartition,
     Replicate,
     Restriction,
     Tiling,
@@ -465,6 +466,8 @@ class Transpose(Transform):
                 partition.color_shape.map(self._inverse),
                 partition.offset.map(self._inverse),
             )
+        elif isinstance(partition, ImagePartition):
+            return partition
         else:
             raise ValueError(
                 f"Unsupported partition: {type(partition).__name__}"
