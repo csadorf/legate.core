@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Optional
+from weakref import WeakValueDictionary
 
 from .. import legion
 from .partition_functor import PartitionFunctor
@@ -67,7 +68,9 @@ class Partition:
                 index_partition.handle,
             )
         self.handle = handle
-        self.children: dict[Point, Region] = dict()
+        self.children: WeakValueDictionary[
+            Point, Region
+        ] = WeakValueDictionary()
 
     @property
     def color_space(self) -> IndexSpace:
@@ -185,14 +188,16 @@ class IndexPartition:
         else:
             self.functor = None
         self.handle = handle
-        self.children: dict[Point, IndexSpace] = dict()
+        self.children: WeakValueDictionary[
+            Point, IndexSpace
+        ] = WeakValueDictionary()
         self.owned = owned
         if owned and not self.parent.owned:
             raise ValueError(
                 "IndexPartition can only own its handle if "
                 "the parent IndexSpace also owns its handle"
             )
-        self.parent.add_child(self)
+        # self.parent.add_child(self)
 
     def __del__(self) -> None:
         # Record a pending deletion if this task is still executing
